@@ -106,7 +106,7 @@ sub get_ws_info
     my($wsinfo);
     #BEGIN get_ws_info
     my $ws = new installed_clients::WorkspaceClient($self->{wsURL}, token=>$ctx->token());
-    $wsinfo = $ws->get_workspace_info({id => $wsid})
+    $wsinfo = $ws->get_workspace_info({id => $wsid});
     #END get_ws_info
     my @_bad_returns;
     (defined $wsinfo) or push(@_bad_returns, "Invalid type for return variable \"wsinfo\" (value was \"$wsinfo\")");
