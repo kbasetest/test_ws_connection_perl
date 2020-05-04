@@ -105,8 +105,8 @@ sub get_ws_info
     my $ctx = $test_ws_connection_perl::test_ws_connection_perlServer::CallContext;
     my($wsinfo);
     #BEGIN get_ws_info
-    ws = new installed_clients::WorkspaceClient($self->{wsURL}, token=>$ctx->token());
-    $wsinfo = ws->get_workspace_info({'id': $wsid})
+    my $ws = new installed_clients::WorkspaceClient($self->{wsURL}, token=>$ctx->token());
+    $wsinfo = $ws->get_workspace_info({'id': $wsid})
     #END get_ws_info
     my @_bad_returns;
     (defined $wsinfo) or push(@_bad_returns, "Invalid type for return variable \"wsinfo\" (value was \"$wsinfo\")");
