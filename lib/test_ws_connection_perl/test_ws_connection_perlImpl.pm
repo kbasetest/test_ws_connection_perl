@@ -36,6 +36,7 @@ sub new
     my $scratch = $cfg->val('test_ws_connection_perl', 'scratch');
     my $callbackURL = $ENV{ SDK_CALLBACK_URL };
     my $wsurl = $cfg->val('workspace-url');
+    print $wsurl;
 
     $self->{scratch} = $scratch;
     $self->{callbackURL} = $callbackURL;
@@ -105,6 +106,7 @@ sub get_ws_info
     my $ctx = $test_ws_connection_perl::test_ws_connection_perlServer::CallContext;
     my($wsinfo);
     #BEGIN get_ws_info
+    print $self->{wsURL};
     my $ws = new installed_clients::WorkspaceClient($self->{wsURL}, token=>$ctx->token());
     $wsinfo = $ws->get_workspace_info({id => $wsid});
     #END get_ws_info
