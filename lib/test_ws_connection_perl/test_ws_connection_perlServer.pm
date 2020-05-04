@@ -28,19 +28,19 @@ has 'local_headers' => (is => 'ro', isa => 'HashRef');
 our $CallContext;
 
 our %return_counts = (
-        'run_test_ws_connection_perl' => 1,
+        'get_ws_info' => 1,
         'status' => 1,
 );
 
 our %method_authentication = (
-        'run_test_ws_connection_perl' => 'required',
+        'get_ws_info' => 'required',
 );
 
 sub _build_valid_methods
 {
     my($self) = @_;
     my $methods = {
-        'run_test_ws_connection_perl' => 1,
+        'get_ws_info' => 1,
         'status' => 1,
     };
     return $methods;

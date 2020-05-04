@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org 
 our $VERSION = '0.0.1';
 our $GIT_URL = '';
-our $GIT_COMMIT_HASH = '';
+our $GIT_COMMIT_HASH = '87e297c2efe8f3b33b149a174a87a4d84208ca90';
 
 =head1 NAME
 
@@ -20,6 +20,7 @@ A KBase module: test_ws_connection_perl
 #BEGIN_HEADER
 use Bio::KBase::AuthToken;
 use installed_clients::KBaseReportClient;
+use installed_clients::WorkspaceClient;
 use Config::IniFiles;
 #END_HEADER
 
@@ -34,9 +35,11 @@ sub new
     my $cfg = Config::IniFiles->new(-file=>$config_file);
     my $scratch = $cfg->val('test_ws_connection_perl', 'scratch');
     my $callbackURL = $ENV{ SDK_CALLBACK_URL };
+    my $wsurl = $cfg->val('workspace-url');
 
     $self->{scratch} = $scratch;
     $self->{callbackURL} = $callbackURL;
+    $self->{wsURL} = $wsurl;
     #END_CONSTRUCTOR
 
     if ($self->can('_init_instance'))
@@ -50,9 +53,9 @@ sub new
 
 
 
-=head2 run_test_ws_connection_perl
+=head2 get_ws_info
 
-  $output = $obj->run_test_ws_connection_perl($params)
+  $wsinfo = $obj->get_ws_info($wsid)
 
 =over 4
 
@@ -61,11 +64,8 @@ sub new
 =begin html
 
 <pre>
-$params is a reference to a hash where the key is a string and the value is an UnspecifiedObject, which can hold any non-null object
-$output is a test_ws_connection_perl.ReportResults
-ReportResults is a reference to a hash where the following keys are defined:
-	report_name has a value which is a string
-	report_ref has a value which is a string
+$wsid is an int
+$wsinfo is an UnspecifiedObject, which can hold any non-null object
 
 </pre>
 
@@ -73,11 +73,8 @@ ReportResults is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$params is a reference to a hash where the key is a string and the value is an UnspecifiedObject, which can hold any non-null object
-$output is a test_ws_connection_perl.ReportResults
-ReportResults is a reference to a hash where the following keys are defined:
-	report_name has a value which is a string
-	report_ref has a value which is a string
+$wsid is an int
+$wsinfo is an UnspecifiedObject, which can hold any non-null object
 
 
 =end text
@@ -86,50 +83,39 @@ ReportResults is a reference to a hash where the following keys are defined:
 
 =item Description
 
-This example function accepts any number of parameters and returns results in a KBaseReport
+Returns information about a workspace as per the get_workspace_info method.
 
 =back
 
 =cut
 
-sub run_test_ws_connection_perl
+sub get_ws_info
 {
     my $self = shift;
-    my($params) = @_;
+    my($wsid) = @_;
 
     my @_bad_arguments;
-    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    (!ref($wsid)) or push(@_bad_arguments, "Invalid type for argument \"wsid\" (value was \"$wsid\")");
     if (@_bad_arguments) {
-	my $msg = "Invalid arguments passed to run_test_ws_connection_perl:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	my $msg = "Invalid arguments passed to get_ws_info:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'run_test_ws_connection_perl');
+							       method_name => 'get_ws_info');
     }
 
     my $ctx = $test_ws_connection_perl::test_ws_connection_perlServer::CallContext;
-    my($output);
-    #BEGIN run_test_ws_connection_perl
-    my $repcli = installed_clients::KBaseReportClient->new($self->{callbackURL});
-    my $report = $repcli->create({
-        workspace_name => $params->{workspace_name},
-        report => {
-            text_message => $params->{parameter_1},
-            objects_created => []
-        }
-    });
-
-    my $output = {
-        report_name => $report->{name},
-        report_ref => $report->{ref}
-    };
-    #END run_test_ws_connection_perl
+    my($wsinfo);
+    #BEGIN get_ws_info
+    ws = new installed_clients::WorkspaceClient($self->{wsURL}, token=>$ctx->token());
+    $wsinfo = ws->get_workspace_info({'id': $wsid})
+    #END get_ws_info
     my @_bad_returns;
-    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    (defined $wsinfo) or push(@_bad_returns, "Invalid type for return variable \"wsinfo\" (value was \"$wsinfo\")");
     if (@_bad_returns) {
-	my $msg = "Invalid returns passed to run_test_ws_connection_perl:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	my $msg = "Invalid returns passed to get_ws_info:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'run_test_ws_connection_perl');
+							       method_name => 'get_ws_info');
     }
-    return($output);
+    return($wsinfo);
 }
 
 
@@ -174,38 +160,6 @@ sub status {
 }
 
 =head1 TYPES
-
-
-
-=head2 ReportResults
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-report_name has a value which is a string
-report_ref has a value which is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-report_name has a value which is a string
-report_ref has a value which is a string
-
-
-=end text
-
-=back
 
 
 
