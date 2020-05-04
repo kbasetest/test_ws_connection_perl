@@ -35,7 +35,7 @@ sub new
     my $cfg = Config::IniFiles->new(-file=>$config_file);
     my $scratch = $cfg->val('test_ws_connection_perl', 'scratch');
     my $callbackURL = $ENV{ SDK_CALLBACK_URL };
-    my $wsurl = $cfg->val('workspace-url');
+    my $wsurl = $cfg->val('test_ws_connection_perl', 'workspace-url');
     print $wsurl;
 
     $self->{scratch} = $scratch;
